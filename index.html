@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container">
+
+    <h1>CRUD</h1>
+
+    <form class="form-control" action="#" onsubmit="carPost(event)" >
+        <input class="form-control mb-3"  type="text" name="name" placeholder=" Car  name">
+        <input class="form-control mb-3" type="text" name="image" placeholder=" Car  image">
+        <input class="form-control mb-3" type="text" name="price" placeholder=" Car  price">
+        <input class="form-control mb-3"  type="text" name="engine" placeholder=" Car  engine">
+        <button class="btn btn-primary" type="submit">send</button>
+    </form>
+    <ul class="list">
+
+    </ul>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form class="form-control" action="#" onsubmit="carUpDate(event)" >
+                <input class="form-control mb-3  up__name"  type="text" name="name" placeholder=" Car  name">
+                <input class="form-control mb-3 up__image" type="text" name="image" placeholder=" Car  image">
+                <input class="form-control mb-3 up__price" type="text" name="price" placeholder=" Car  price">
+                <input class="form-control mb-3 up__engine"  type="text" name="engine" placeholder=" Car  engine">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                  </div>
+            </form>
+        </div>
+     
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="./js/main.js"></script>
+<script>
+    // JavaScript kodini shu yerga yozing
+    fetch(`https://65bdc551b51f9b29e933ab2f.mockapi.io/car/car`)
+    .then((res)=> res.json())
+    .then((data)=>  Data(data))
+    let List = document.querySelector(".list")
+
+    function Data(data) {
+    window.localStorage.setItem('data', JSON.stringify(data))
+        data.map((item)=>{
+            let newLi = document.createElement('li')
+            newLi.className  = 'item'
+            newLi.innerHTML =`
+            <div class=" kard card" style="width: 18rem;">
+      <img src="${item.image}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">${item.name}</h5>
+        <p class="card-text">${item.price}</p>
+        <p class="card-text">${item.engine}</p>
+        <a href="#" class="btn btn-success">More see..</a>
+        <button onclick ="getId(${item.id})" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary" ><i class="bi bi-pen"></i></button>
+        <button onclick ="carDel(${item.id})"  class="btn btn-danger" ><i class="bi bi-trash"></i></button>
+      </div>
+    </div>
+            `
+            List.appendChild(newLi)
+        })
+    }
+
+    function carPost(event) {
+
+        event.preventDefault()
+        let  carName = event.target.name.value
+        let carImage = event.target.image.value
+        let carPrice = event.target.price.value
+        let carEngine = event.target.engine.value
+        let data = {
+            name: carName,
+            image: carImage,
+            price:carPrice,
+            engine: carEngine
+        }
+        console.log(data);
+
+        fetch(`https://65bdc551b51f9b29e933ab2f.mockapi.io/car/car`,{
+           method:"POST",
+        headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+    .then((res)=>{
+        console.log(res);
+        return  res.json()
+    })
+    .then((data)=>console.log(data))
+    .then(()=>{
+         event.target.name.value = ''
+        event.target.image.value = ''
+          event.target.price.value = ''
+          event.target.engine.value  = ''
+    })
+
+    }
+
+    function carUpDate(event) {
+        console.log(event);
+        
+        event.preventDefault()
+        let  carName = event.target.name.value
+        let carImage = event.target.image.value
+        let carPrice = event.target.price.value
+        let carEngine = event.target.engine.value
+        let data = {
+            name: carName,
+            image: carImage,
+            price:carPrice,
+            engine: carEngine
+        }
+        console.log(data);
+
+        fetch(`https://65bdc551b51f9b29e933ab2f.mockapi.io/car/car/${window.localStorage.getItem('id')}`,{
+           method:"PUT",
+        headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+    .then((res)=>{
+        console.log(res);
+        return  res.json()
+    })
+    .then((data)=>console.log(data))
+    .then(()=>{
+         event.target.name.value = ''
+        event.target.image.value = ''
+          event.target.price.value = ''
+          event.target.engine.value  = ''
+    })
+
+    }
+
+   
